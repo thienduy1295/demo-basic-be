@@ -2,27 +2,41 @@ const data = {};
 const express = require("express");
 const router = express.Router();
 
+const fs = require("fs");
+
 /* GET students. */
 router.get("/", function (req, res, next) {
-  // const queries = req.query;
-  // console.log(queries);
-  // test error
-  // try {
-  //   const x = 3;
-  //   x.map((e) => e);
-  //   return res.status(200).send({ data });
-  // } catch (error) {
-  //   next(error);
-  // }
+  let response;
 
-  return res.status(200).send("students");
+  try {
+    response = fs.readFileSync("./db.json", "utf8");
+    response = JSON.parse(response);
+  } catch (error) {
+    console.log(error);
+  }
+  if (req.query.name) {
+    response = response.filter((e) => e.name.includes(req.query.name));
+  }
+  if (req.query.age) {
+    response = response.filter((e) => e.age === parseInt(req.query.age));
+  }
+
+  return res.status(200).send(response);
 });
 
 /* GET students. */
 router.get("/:id", function (req, res, next) {
-  // const params = req.params;
+  // const id = req.params.id;
   // console.log(params);
-  return res.status(200).send({ data });
+  let response;
+  try {
+    response = fs.readFileSync("./db.json", "utf8");
+    response = JSON.parse(response);
+  } catch (error) {
+    console.log(error);
+  }
+
+  return res.status(200).send(response.filter((e) => e.id === req.params.id));
 });
 
 module.exports = router;
